@@ -12,10 +12,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $comment = $_POST['comment'] ?? '';
     $username = $_SESSION['username'];
     
+    // EVASION SUPPORT: Multi-level URL decoding
+    $decoded_comment = $comment;
+    for ($i = 0; $i < 5; $i++) {
+        $prev = $decoded_comment;
+        $decoded_comment = urldecode($decoded_comment);
+        if ($prev === $decoded_comment) break;
+    }
+    
+    // EVASION SUPPORT: HTML entity decoding
+    $decoded_comment = html_entity_decode($decoded_comment, ENT_QUOTES | ENT_HTML5);
+    
+    // EVASION SUPPORT: Unicode escapes
+    $decoded_comment = preg_replace_callback('/\\\\u([0-9a-fA-F]{4})/', function($m) {
+        return mb_convert_encoding(pack('H*', $m[1]), 'UTF-8', 'UTF-16BE');
+    }, $decoded_comment);
+    
     // VULNERABLE: Stored XSS
     // User input is stored directly in database without sanitization
     // When displayed, it's not escaped either
-    $query = "INSERT INTO comments (username, email, content, created_at) VALUES ('" . $username . "', 'user@dvwa.local', '" . addslashes($comment) . "', NOW())";
+    $query = "INSERT INTO comments (username, email, content, created_at) VALUES ('" . $username . "', 'user@dvwa.local', '" . addslashes($decoded_comment) . "', NOW())";
     
     if ($mysqli->query($query)) {
         $message = "Komentar berhasil diposting!";

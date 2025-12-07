@@ -9,6 +9,24 @@ if (!isset($_SESSION['user_id'])) {
 // VULNERABLE: Reflected XSS
 // User input from URL parameter is directly echoed without escaping
 $name = $_GET['name'] ?? '';
+
+// EVASION SUPPORT: Multi-level URL decoding
+$decoded_name = $name;
+for ($i = 0; $i < 5; $i++) {
+    $prev = $decoded_name;
+    $decoded_name = urldecode($decoded_name);
+    if ($prev === $decoded_name) break;
+}
+
+// EVASION SUPPORT: HTML entity decoding
+$decoded_name = html_entity_decode($decoded_name, ENT_QUOTES | ENT_HTML5);
+
+// EVASION SUPPORT: Unicode escapes
+$decoded_name = preg_replace_callback('/\\\\u([0-9a-fA-F]{4})/', function($m) {
+    return mb_convert_encoding(pack('H*', $m[1]), 'UTF-8', 'UTF-16BE');
+}, $decoded_name);
+
+$name = $decoded_name;
 ?>
 <!DOCTYPE html>
 <html>

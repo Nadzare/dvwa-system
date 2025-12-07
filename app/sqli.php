@@ -13,12 +13,32 @@ $search_query = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $search_query = $_POST['search'] ?? '';
     
+    // EVASION SUPPORT: Decode URL encoding (single, double, triple)
+    // This allows payloads like %55NION %53ELECT or %2555NION to work
+    $decoded_query = $search_query;
+    for ($i = 0; $i < 5; $i++) {
+        $prev = $decoded_query;
+        $decoded_query = urldecode($decoded_query);
+        if ($prev === $decoded_query) break; // No more decoding needed
+    }
+    
+    // EVASION SUPPORT: Decode HTML entities
+    $decoded_query = html_entity_decode($decoded_query, ENT_QUOTES | ENT_HTML5);
+    
+    // EVASION SUPPORT: Replace unicode escapes (\u0027 format)
+    $decoded_query = preg_replace_callback('/\\\\u([0-9a-fA-F]{4})/', function($m) {
+        return mb_convert_encoding(pack('H*', $m[1]), 'UTF-8', 'UTF-16BE');
+    }, $decoded_query);
+    
+    // EVASION SUPPORT: Normalize whitespace (tabs, newlines to spaces)
+    $decoded_query = preg_replace('/[\t\n\r\x00\x0B]+/', ' ', $decoded_query);
+    
     // VULNERABLE: SQL Injection - No parameterized queries, NO ESCAPING
-    // Attacker can use: 1' OR '1'='1
-    // Attacker can use: 1' UNION SELECT 1,2,3,4 -- 
-    // Attacker can use: 1' UNION SELECT username, password, 3, created_at FROM users -- 
-    // The query is directly concatenated without any sanitization
-    $query = "SELECT id, username, email, created_at FROM comments WHERE id = '" . $search_query . "'";
+    // Now accepts: 1' OR '1'='1
+    // Now accepts: %55NION %53ELECT (URL encoded)
+    // Now accepts: 1' UNI/**/ON SEL/**/ECT (comment injection)
+    // Now accepts: 1%27 OR %271%27=%271%27 (encoded quotes)
+    $query = "SELECT id, username, email, created_at FROM comments WHERE id = '" . $decoded_query . "'";
     
     $result = $mysqli->query($query);
     

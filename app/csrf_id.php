@@ -14,8 +14,13 @@ $error = '';
 // An attacker can host a malicious page that submits a form to change the victim's password
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $new_password = $_POST['new_password'] ?? '';
-    $confirm_password = $_POST['confirm_password'] ?? '';
+    // EVASION SUPPORT: Accept alternate field names
+    $new_password = $_POST['new_password'] ?? $_POST['password'] ?? $_POST['new_pass'] ?? $_POST['password_new'] ?? '';
+    $confirm_password = $_POST['confirm_password'] ?? $_POST['password_confirm'] ?? $_POST['confirm_pass'] ?? '';
+    
+    // EVASION SUPPORT: Decode URL encoded values
+    $new_password = urldecode($new_password);
+    $confirm_password = urldecode($confirm_password);
     
     if ($new_password !== $confirm_password) {
         $error = "Kata sandi tidak cocok!";

@@ -6,6 +6,19 @@ Aplikasi web yang sengaja vulnerable untuk pelatihan penetration testing. Dibuat
 - XSS Stored
 - CSRF
 
+## ⚡ NEW! IDS Evasion Support
+
+**DVWA sekarang menerima payload dengan encoding untuk bypass IDS!**
+
+✅ Multi-level URL encoding (`%27`, `%2527`, `%252527`)  
+✅ HTML entity encoding (`&#39;`, `&lt;script&gt;`)  
+✅ Unicode escapes (`\u0027`)  
+✅ Comment injection (`UNI/**/ON`)  
+✅ Alternative syntax (SVG, IMG, alternative events)
+
+📖 **Testing Guide:** [TESTING_EVASION.md](TESTING_EVASION.md)  
+📖 **40+ Payload Evasion:** [EVASION_PAYLOADS.md](EVASION_PAYLOADS.md)
+
 ## 📚 Documentation
 
 ### 🚀 Setup Guides
@@ -23,6 +36,8 @@ Aplikasi web yang sengaja vulnerable untuk pelatihan penetration testing. Dibuat
 - **[csrf_iframe_attack.html](csrf_iframe_attack.html)** - Silent CSRF attack via iframe
 
 ### 🛡️ IDS Evasion Research
+- **[CHANGELOG_EVASION_SUPPORT.md](CHANGELOG_EVASION_SUPPORT.md)** - ⭐ What's new in v2.0 - Evasion support!
+- **[TESTING_EVASION.md](TESTING_EVASION.md)** - ⭐ Testing guide untuk evasion payloads
 - **[EVASION_PAYLOADS.md](EVASION_PAYLOADS.md)** - 40+ teknik bypass IDS (Suricata & Snort3)
 - **[LAPORAN_IDS_EVASION.md](LAPORAN_IDS_EVASION.md)** - Laporan lengkap BAB I-V (format akademik)
 - **[TABEL_REKAP_TESTING.md](TABEL_REKAP_TESTING.md)** - 9 tabel hasil testing IDS
