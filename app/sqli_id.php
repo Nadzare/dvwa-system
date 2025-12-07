@@ -14,11 +14,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $search_query = $_POST['search'] ?? '';
     
     // VULNERABLE: SQL Injection - No parameterized queries, NO ESCAPING
-    // Attacker can use: 1 OR 1=1
-    // Attacker can use: 1 UNION SELECT 1,2,3,4 -- 
-    // Attacker can use: 1 UNION SELECT username, password, 3, created_at FROM users -- 
+    // Attacker can use: 1' OR '1'='1
+    // Attacker can use: 1' UNION SELECT 1,2,3,4 -- 
+    // Attacker can use: 1' UNION SELECT username, password, 3, created_at FROM users -- 
     // The query is directly concatenated without any sanitization
-    $query = "SELECT id, username, email, created_at FROM comments WHERE id = " . $search_query;
+    $query = "SELECT id, username, email, created_at FROM comments WHERE id = '" . $search_query . "'";
     
     $result = $mysqli->query($query);
     
@@ -151,9 +151,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         <div class="hint">
             <strong>Petunjuk Eksploitasi:</strong><br>
-            • Coba: <code>1 OR 1=1</code> - untuk menampilkan semua record<br>
-            • Coba: <code>1 UNION SELECT 1,2,3,4</code> - untuk menguji kolom UNION<br>
-            • Coba: <code>1 UNION SELECT username, password, 3, created_at FROM users</code> - untuk mengekstrak kredensial pengguna<br>
+            • Coba: <code>1' OR '1'='1</code> - untuk menampilkan semua record<br>
+            • Coba: <code>1' UNION SELECT 1,2,3,4</code> - untuk menguji kolom UNION<br>
+            • Coba: <code>1' UNION SELECT username, password, 3, created_at FROM users</code> - untuk mengekstrak kredensial pengguna<br>
             • Coba: <code>1 AND SLEEP(5)</code> - SQLi blind berbasis waktu (respons akan tertunda 5 detik)
         </div>
         

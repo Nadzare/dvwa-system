@@ -14,11 +14,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $search_query = $_POST['search'] ?? '';
     
     // VULNERABLE: SQL Injection - No parameterized queries, NO ESCAPING
-    // Attacker can use: 1 OR 1=1
-    // Attacker can use: 1 UNION SELECT 1,2,3,4 -- 
-    // Attacker can use: 1 UNION SELECT username, password, 3, created_at FROM users -- 
+    // Attacker can use: 1' OR '1'='1
+    // Attacker can use: 1' UNION SELECT 1,2,3,4 -- 
+    // Attacker can use: 1' UNION SELECT username, password, 3, created_at FROM users -- 
     // The query is directly concatenated without any sanitization
-    $query = "SELECT id, username, email, created_at FROM comments WHERE id = " . $search_query;
+    $query = "SELECT id, username, email, created_at FROM comments WHERE id = '" . $search_query . "'";
     
     $result = $mysqli->query($query);
     
@@ -151,9 +151,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         <div class="hint">
             <strong>Exploitation Hints:</strong><br>
-            • Try: <code>1 OR 1=1</code> - to show all records<br>
-            • Try: <code>1 UNION SELECT 1,2,3,4</code> - to test UNION columns<br>
-            • Try: <code>1 UNION SELECT username, password, 3, created_at FROM users</code> - to extract user credentials<br>
+            • Try: <code>1' OR '1'='1</code> - to show all records<br>
+            • Try: <code>1' UNION SELECT 1,2,3,4</code> - to test UNION columns<br>
+            • Try: <code>1' UNION SELECT username, password, 3, created_at FROM users</code> - to extract user credentials<br>
             • Try: <code>1 AND SLEEP(5)</code> - time-based blind SQLi (response will be delayed 5 seconds)
         </div>
         

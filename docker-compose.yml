@@ -2,43 +2,52 @@ version: '3.8'
 
 services:
   web:
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile
     container_name: dvwa_web
     ports:
-      - "8000:80"
+      - "0.0.0.0:${WEB_PORT:-8000}:80"
     volumes:
-      - ./app:/var/www/html
+      - ./app:/var/www/html/app
       - ./assets:/var/www/html/assets
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
-      - DB_HOST=db
-      - DB_USER=dvwa
-      - DB_PASSWORD=dvwa123
-      - DB_NAME=dvwa
+      - DB_HOST=${DB_HOST:-db}
+      - DB_USER=${DB_USER:-dvwa}
+      - DB_PASSWORD=${DB_PASSWORD:-dvwa123}
+      - DB_NAME=${DB_NAME:-dvwa}
+      - DB_PORT=${DB_PORT:-3306}
     networks:
       - dvwa_network
-    restart: always
+    restart: unless-stopped
+    labels:
+      - "com.example.description=DVWA Web Application"
 
   db:
-    image: mariadb:11
+    image: mariadb:11.4
     container_name: dvwa_db
     environment:
-      MYSQL_ROOT_PASSWORD: root123
-      MYSQL_DATABASE: dvwa
-      MYSQL_USER: dvwa
-      MYSQL_PASSWORD: dvwa123
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root123}
+      MYSQL_DATABASE: ${DB_NAME:-dvwa}
+      MYSQL_USER: ${DB_USER:-dvwa}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-dvwa123}
       MYSQL_INITDB_SKIP_TZINFO: "yes"
     volumes:
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/01-init.sql
       - dvwa_data:/var/lib/mysql
     networks:
       - dvwa_network
-    restart: always
+    restart: unless-stopped
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       timeout: 20s
       retries: 10
+      interval: 10s
+    labels:
+      - "com.example.description=DVWA Database"
 
 networks:
   dvwa_network:
@@ -46,3 +55,4 @@ networks:
 
 volumes:
   dvwa_data:
+    driver: local
