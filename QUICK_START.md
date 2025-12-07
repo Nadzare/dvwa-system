@@ -1,49 +1,149 @@
-# 🐳 DVWA - Docker Quick Reference
+# 🚀 Quick Start - Pilih Environment Kamu
 
-## 🚀 Run Anywhere dengan Docker
+## 📊 Temenmu Clone dari GitHub?
 
-DVWA sekarang bisa dijalankan di **mana saja** yang ada Docker installed!
+Pilih sesuai yang kamu punya:
 
-### Minimal Requirements
-- Docker & Docker Compose installed
-- Port 8000 available
-- ~500MB disk space
+| Kamu Punya? | Pilih Ini | Setup | Config |
+|------------|-----------|-------|--------|
+| Docker Desktop | 🐳 Docker | 5 min | ❌ |
+| XAMPP | 📦 XAMPP | 3 min | ✅ Edit 2 baris |
+| Laragon | 🚀 Laragon | 2 min | ⚠️ Optional |
 
 ---
 
-## ⚡ Quick Start
+## 🐳 Pakai Docker
 
 ```bash
-# 1. Clone repository
-git clone https://github.com/yourusername/dvwalast.git
-cd dvwalast
-
-# 2. Run Docker
-docker-compose up -d
-
-# 3. Access
-# Indonesian: http://localhost:8000/login_id.php
-# English: http://localhost:8000/login.php
-
-# Credentials: admin / admin123
+git clone https://github.com/kendikadimas/dvwa.git
+cd dvwa
+docker compose up -d
 ```
 
-**Siap dalam 2 menit!**
+Buka: **http://localhost:8000**
+
+✅ Paling aman & portable  
+❌ Butuh Docker Desktop + RAM 500MB+
+
+📖 [Panduan lengkap](SETUP_GITHUB.md#-setup-dengan-docker)
 
 ---
 
-## 📝 Commands
+## 📦 Pakai XAMPP
+
+```bash
+git clone https://github.com/kendikadimas/dvwa.git
+cd dvwa
+xcopy /E /I dvwa C:\xampp\htdocs\dvwa
+```
+
+**PENTING! Edit `config.php` baris 5-6:**
+```php
+define('DB_USER', getenv('DB_USER') ?: 'root');
+define('DB_PASSWORD', getenv('DB_PASSWORD') ?: '');
+```
+
+Start **Apache + MySQL** di XAMPP Control Panel
+
+Buka: **http://localhost/dvwa/login.php**
+
+✅ Tercepat, RAM rendah  
+❌ Harus edit config
+
+📖 [Panduan lengkap](SETUP_GITHUB.md#-setup-dengan-xampp) | [Troubleshooting](SETUP_XAMPP.md)
+
+---
+
+## 🚀 Pakai Laragon
+
+```bash
+git clone https://github.com/kendikadimas/dvwa.git
+cd dvwa
+xcopy /E /I dvwa d:\laragon\www\dvwa
+```
+
+Klik **Start All** di Laragon
+
+Buka: **http://dvwa.test** atau **http://localhost/dvwa**
+
+✅ Paling cepat (2 menit)  
+⚠️ Mungkin perlu buat user MySQL
+
+📖 [Panduan lengkap](SETUP_GITHUB.md#-setup-dengan-laragon)
+
+---
+
+## 🎯 Setelah Setup
+
+**Klik tombol ini di login page:**
+- **📦 Create/Reset Database** → Buat database otomatis
+- **🔄 Reset Data** → Clear comments (XSS testing)
+
+**Login:**
+```
+Username: admin
+Password: admin123
+```
+
+**Test SQLi:**
+```sql
+1' OR '1'='1' #
+```
+
+---
+
+## ❌ Troubleshooting Cepat
+
+### XAMPP - Access Denied
+```php
+// config.php HARUS root/empty, BUKAN dvwa/dvwa123
+define('DB_USER', getenv('DB_USER') ?: 'root');
+define('DB_PASSWORD', getenv('DB_PASSWORD') ?: '');
+```
+
+### XAMPP - Apache Tidak Start
+```powershell
+# Check port 80
+netstat -ano | findstr :80
+# Ganti port Apache ke 8080 di httpd.conf
+```
+
+### Docker - Port 8000 Dipakai
+```yaml
+# docker-compose.yml
+ports:
+  - "8080:80"  # ganti dari 8000
+```
+
+### Laragon - Virtual Host Error
+```
+# Tambah di C:\Windows\System32\drivers\etc\hosts
+127.0.0.1    dvwa.test
+```
+
+---
+
+## 📚 Dokumentasi Lengkap
+
+1. **[SETUP_GITHUB.md](SETUP_GITHUB.md)** - Panduan lengkap semua environment
+2. **[SETUP_XAMPP.md](SETUP_XAMPP.md)** - Troubleshooting khusus XAMPP
+3. **[EVASION_PAYLOADS.md](EVASION_PAYLOADS.md)** - 40+ payload bypass IDS
+4. **[LAPORAN_IDS_EVASION.md](LAPORAN_IDS_EVASION.md)** - Laporan BAB I-V
+
+---
+
+## 🐳 Docker Commands (Opsional)
 
 ### Start
 ```bash
-docker-compose up -d        # Run in background
-docker-compose up          # Run in foreground (see logs)
+docker compose up -d        # Run in background
+docker compose up          # Run with logs
 ```
 
 ### Stop
 ```bash
-docker-compose down        # Stop containers
-docker-compose down -v     # Stop & delete volumes (reset database)
+docker compose down        # Stop containers
+docker compose down -v     # Stop & reset database
 ```
 
 ### Logs

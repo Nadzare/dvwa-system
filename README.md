@@ -8,22 +8,35 @@ Aplikasi web yang sengaja vulnerable untuk pelatihan penetration testing. Dibuat
 
 ## 📚 Documentation
 
+### 🚀 Setup Guides
+- **[QUICK_START.md](QUICK_START.md)** - ⭐ Pilih environment (Docker/XAMPP/Laragon) dengan cepat
+- **[SETUP_GITHUB.md](SETUP_GITHUB.md)** - Panduan lengkap setup dari GitHub clone (semua environment)
+- **[SETUP_XAMPP.md](SETUP_XAMPP.md)** - Troubleshooting khusus XAMPP (port conflict, database, dll)
+- **[NETWORK_SETUP.md](NETWORK_SETUP.md)** - Setup networking untuk akses dari Kali VM
+
+### 🎯 Payload & Testing
 - **[PAYLOADS.md](PAYLOADS.md)** - Panduan lengkap payload SQLi, XSS, CSRF dengan contoh praktis
 - **[QUICK_PAYLOADS.md](QUICK_PAYLOADS.md)** - Quick reference card untuk copy-paste payload
 - **[test_payloads.ps1](test_payloads.ps1)** - Script PowerShell untuk testing otomatis (Windows)
 - **[test_payloads.sh](test_payloads.sh)** - Script Bash untuk testing otomatis (Linux/Kali)
 - **[csrf_attack.html](csrf_attack.html)** - HTML file untuk CSRF attack simulation
 - **[csrf_iframe_attack.html](csrf_iframe_attack.html)** - Silent CSRF attack via iframe
-- **[NETWORK_SETUP.md](NETWORK_SETUP.md)** - Setup networking untuk akses dari Kali VM
 
-## ⚡ Quick Start (Clone dari GitHub)
+### 🛡️ IDS Evasion Research
+- **[EVASION_PAYLOADS.md](EVASION_PAYLOADS.md)** - 40+ teknik bypass IDS (Suricata & Snort3)
+- **[LAPORAN_IDS_EVASION.md](LAPORAN_IDS_EVASION.md)** - Laporan lengkap BAB I-V (format akademik)
+- **[TABEL_REKAP_TESTING.md](TABEL_REKAP_TESTING.md)** - 9 tabel hasil testing IDS
 
-### Prerequisites
+## ⚡ Quick Start
+
+### 🐳 OPSI 1: Menggunakan Docker (Recommended)
+
+**Prerequisites:**
 - Docker & Docker Compose installed
 - Port 8000 available
 - Git (untuk clone)
 
-### Setup (5 Menit)
+**Setup (5 Menit):**
 
 1. **Clone Repository**
    ```bash
@@ -54,10 +67,99 @@ Aplikasi web yang sengaja vulnerable untuk pelatihan penetration testing. Dibuat
 
 **🎉 No manual database setup needed!** Cukup klik tombol di login page.
 
-### Stop
+**Stop:**
 ```bash
 docker-compose down
 ```
+
+---
+
+### 📦 OPSI 2: Menggunakan XAMPP/Laragon (Tanpa Docker)
+
+**Prerequisites:**
+- XAMPP atau Laragon installed
+- Apache + MySQL/MariaDB running
+- Git (untuk clone)
+
+**Setup (5 Menit):**
+
+1. **Clone Repository**
+   ```bash
+   git clone https://github.com/kendikadimas/dvwa.git
+   cd dvwa
+   ```
+
+2. **Copy ke Web Root**
+   ```bash
+   # XAMPP
+   xcopy /E /I app C:\xampp\htdocs\dvwa
+   
+   # Laragon
+   xcopy /E /I app C:\laragon\www\dvwa
+   ```
+
+3. **Edit Config (HANYA untuk XAMPP)**
+   
+   Edit `config.php`, ubah baris 5-6:
+   ```php
+   // Dari:
+   define('DB_USER', getenv('DB_USER') ?: 'dvwa');
+   define('DB_PASSWORD', getenv('DB_PASSWORD') ?: 'dvwa123');
+   
+   // Jadi:
+   define('DB_USER', getenv('DB_USER') ?: 'root');
+   define('DB_PASSWORD', getenv('DB_PASSWORD') ?: '');  // kosong untuk XAMPP
+   ```
+   
+   **Atau copy config siap pakai:**
+   ```bash
+   copy app\config_xampp_example.php app\config.php
+   ```
+
+4. **Start Apache & MySQL**
+   - XAMPP: Buka XAMPP Control Panel → Start Apache & MySQL
+   - Laragon: Start All
+
+5. **Buka Browser**
+   ```
+   # XAMPP
+   http://localhost/dvwa/login.php
+   
+   # Laragon
+   http://localhost/dvwa/login.php
+   ```
+
+6. **Klik "📦 Create/Reset DB"**
+   Database dibuat otomatis!
+
+7. **Login**
+   ```
+   Username: admin
+   Password: admin123
+   ```
+
+**📖 Panduan Lengkap XAMPP:** [SETUP_XAMPP.md](SETUP_XAMPP.md)
+
+---
+
+### 📊 Perbandingan Environment
+
+| Fitur | Docker | XAMPP | Laragon |
+|-------|--------|-------|---------|
+| Setup Speed | ⚡ Fast (5 min) | ⚡ Fast (5 min) | ⚡ Fast (5 min) |
+| Config Edit | ❌ No | ✅ Yes (root/empty) | ❌ No |
+| Port Default | 8000 | 80 | 80 |
+| Isolation | ✅ Yes | ❌ No | ❌ No |
+| Portable | ✅ Yes | ⚠️ Medium | ⚠️ Medium |
+| Auto DB Setup | ✅ Yes | ✅ Yes | ✅ Yes |
+| Reset DB | ✅ Easy | ✅ Easy | ✅ Easy |
+
+**Rekomendasi:**
+- 🐳 **Docker:** Untuk isolation dan portability
+- 📦 **XAMPP:** Sudah familiar dengan XAMPP
+- 🚀 **Laragon:** Development speed dan simplicity
+
+**Semua opsi support auto-create database!** Tinggal klik tombol di login page.
 
 ---
 
