@@ -118,6 +118,11 @@ if (!isset($_SESSION['user_id'])) {
                 <p>Ubah password akun Anda. Fitur ini rentan terhadap serangan CSRF.</p>
                 <a href="csrf_id.php">Ganti Password</a>
             </div>
+            <div class="lab-card" style="border-left: 4px solid #ff0000;">
+                <h2>🗑️ Reset Database</h2>
+                <p>Hapus semua data dan kembalikan database ke state awal. Berguna untuk cleanup setelah testing.</p>
+                <a href="reset_database_id.php" style="background-color: #c00;">Reset Database</a>
+            </div>
         </div>
     </div>
 </body>
