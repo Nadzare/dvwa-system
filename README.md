@@ -36,6 +36,7 @@ Aplikasi web yang sengaja vulnerable untuk pelatihan penetration testing. Dibuat
 - **[csrf_iframe_attack.html](csrf_iframe_attack.html)** - Silent CSRF attack via iframe
 
 ### 🛡️ IDS Evasion Research
+- **[EVASION_SNORT3_SURICATA.md](EVASION_SNORT3_SURICATA.md)** - ⭐⭐ Payload evasion untuk rules spesifik kamu!
 - **[CHANGELOG_EVASION_SUPPORT.md](CHANGELOG_EVASION_SUPPORT.md)** - ⭐ What's new in v2.0 - Evasion support!
 - **[TESTING_EVASION.md](TESTING_EVASION.md)** - ⭐ Testing guide untuk evasion payloads
 - **[EVASION_PAYLOADS.md](EVASION_PAYLOADS.md)** - 40+ teknik bypass IDS (Suricata & Snort3)
