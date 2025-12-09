@@ -57,7 +57,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$db_needs_setup) {
 <html>
 <head>
     <title>Sistem Keuangan - Portal Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
@@ -65,50 +71,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$db_needs_setup) {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            min-height: 100vh;
+            padding: 20px;
         }
         .login-container {
             background-color: #fff;
-            padding: 40px;
+            padding: 35px;
             border-radius: 10px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            width: 380px;
+            width: 100%;
+            max-width: 420px;
             color: #333;
         }
         h1 {
             text-align: center;
             color: #1e3c72;
-            margin: 0 0 10px 0;
-            font-size: 28px;
+            margin: 0 0 8px 0;
+            font-size: 24px;
             font-weight: 600;
         }
         .subtitle {
             text-align: center;
             color: #2a5298;
-            font-size: 14px;
-            margin-bottom: 30px;
+            font-size: 13px;
+            margin-bottom: 25px;
             font-weight: 500;
         }
         .logo {
             text-align: center;
-            font-size: 48px;
-            margin-bottom: 10px;
+            font-size: 42px;
+            margin-bottom: 8px;
         }
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: 600;
             color: #333;
-            font-size: 14px;
+            font-size: 13px;
         }
         input[type="text"],
         input[type="password"] {
             width: 100%;
-            padding: 12px 15px;
+            padding: 11px 14px;
             box-sizing: border-box;
             background-color: #f5f7fa;
             color: #333;
@@ -125,13 +132,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$db_needs_setup) {
         }
         button {
             width: 100%;
-            padding: 13px;
+            padding: 12px;
             background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
             color: #fff;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(42, 82, 152, 0.3);
@@ -142,39 +149,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$db_needs_setup) {
         }
         .error {
             color: #d32f2f;
-            margin-bottom: 20px;
-            padding: 12px 15px;
+            margin-bottom: 16px;
+            padding: 10px 12px;
             background-color: #ffebee;
             border-radius: 5px;
             border-left: 4px solid #d32f2f;
-            font-size: 14px;
+            font-size: 13px;
         }
         .success {
             color: #388e3c;
-            margin-bottom: 20px;
-            padding: 12px 15px;
+            margin-bottom: 16px;
+            padding: 10px 12px;
             background-color: #e8f5e9;
             border-radius: 5px;
             border-left: 4px solid #388e3c;
-            font-size: 14px;
+            font-size: 13px;
         }
         .info {
             color: #666;
-            font-size: 13px;
+            font-size: 12px;
             text-align: center;
-            margin-top: 25px;
-            padding: 15px;
+            margin-top: 20px;
+            padding: 12px;
             background-color: #f5f7fa;
             border-radius: 5px;
         }
         .warning-badge {
             background-color: #fff3cd;
             color: #856404;
-            padding: 8px 12px;
+            padding: 6px 10px;
             border-radius: 5px;
-            font-size: 12px;
+            font-size: 11px;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             border: 1px solid #ffeaa7;
         }
     </style>

@@ -1,7 +1,10 @@
 <?php
 require_once 'config.php';
 
+// Destroy session
 session_destroy();
-header('Location: login.php');
+
+// Redirect ke halaman login Sistem Keuangan (Indonesian)
+header('Location: login_id.php');
 exit;
 ?>
