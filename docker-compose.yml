@@ -1,10 +1,11 @@
-version: '3.8'
-
 services:
   web:
     build: 
       context: .
       dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
+    platform: linux/amd64
     container_name: dvwa_web
     ports:
       - "0.0.0.0:${WEB_PORT:-8000}:80"
@@ -28,6 +29,7 @@ services:
 
   db:
     image: mariadb:11.4
+    platform: linux/amd64
     container_name: dvwa_db
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root123}
