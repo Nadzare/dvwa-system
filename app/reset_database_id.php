@@ -104,60 +104,80 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_reset'])) {
     <title>Reset Database - Sistem Arsip Surat</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #1a1a1a;
-            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             margin: 0;
             padding: 20px;
+            min-height: 100vh;
         }
         .container {
             max-width: 800px;
             margin: 0 auto;
         }
         .back-link {
-            color: #f00;
+            background-color: #fff;
+            color: #1e3c72;
             text-decoration: none;
             margin-bottom: 20px;
             display: inline-block;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(255,255,255,0.2);
         }
         .back-link:hover {
-            text-decoration: underline;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255,255,255,0.3);
         }
         h1 {
-            color: #f00;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         .warning-box {
-            background-color: #4a0000;
-            padding: 20px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            border-left: 4px solid #f00;
+            background-color: #fff3cd;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 5px solid #ffc107;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            color: #856404;
         }
         .warning-box h2 {
-            color: #ff4444;
+            color: #d39e00;
             margin-top: 0;
         }
         .info-box {
-            background-color: #222;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            border-left: 4px solid #f00;
+            background-color: #fff;
+            padding: 20px 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 5px solid #2a5298;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            color: #333;
+        }
+        .info-box h3 {
+            color: #1e3c72;
+            margin-top: 0;
         }
         .success-box {
-            background-color: #004a00;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            border-left: 4px solid #00ff00;
+            background-color: #d4edda;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 5px solid #28a745;
             white-space: pre-line;
+            color: #155724;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
         .error-box {
-            background-color: #4a0000;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            border-left: 4px solid #ff0000;
+            background-color: #f8d7da;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 5px solid #dc3545;
+            color: #721c24;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
         .form-group {
             margin-bottom: 20px;
@@ -166,66 +186,82 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_reset'])) {
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
+            color: #1e3c72;
         }
         input[type="text"] {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             box-sizing: border-box;
-            background-color: #333;
-            color: #fff;
-            border: 1px solid #555;
-            border-radius: 3px;
+            background-color: #fff;
+            color: #333;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
             font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
         }
         button {
             padding: 12px 30px;
-            background-color: #f00;
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
             color: #fff;
             border: none;
-            border-radius: 3px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 16px;
             font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(220, 53, 69, 0.3);
         }
         button:hover {
-            background-color: #c00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
         }
         .btn-secondary {
-            background-color: #555;
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
             margin-left: 10px;
         }
         .btn-secondary:hover {
-            background-color: #777;
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
         }
         .table-list {
-            background-color: #222;
-            padding: 15px;
-            border-radius: 5px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
             margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
         .table-list h3 {
             margin-top: 0;
-            color: #f00;
+            color: #1e3c72;
         }
         .table-item {
-            padding: 8px;
+            padding: 10px;
             margin: 5px 0;
-            background-color: #333;
-            border-radius: 3px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            color: #333;
         }
         .lang-switch {
             float: right;
             margin-top: 10px;
         }
         .lang-switch a {
-            color: #f00;
+            background-color: #fff;
+            color: #1e3c72;
             text-decoration: none;
-            padding: 5px 10px;
-            background-color: #333;
-            border-radius: 3px;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(255,255,255,0.2);
         }
         .lang-switch a:hover {
-            background-color: #555;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255,255,255,0.3);
         }
     </style>
 </head>

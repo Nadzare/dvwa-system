@@ -56,34 +56,52 @@ $result = $mysqli->query($query);
     <title>Sistem Arsip Surat - Komentar Surat</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #1a1a1a;
-            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             margin: 0;
             padding: 20px;
+            min-height: 100vh;
         }
         .container {
             max-width: 900px;
             margin: 0 auto;
         }
         .back-link {
-            color: #f00;
+            background-color: #fff;
+            color: #1e3c72;
             text-decoration: none;
             margin-bottom: 20px;
             display: inline-block;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(255,255,255,0.2);
         }
         .back-link:hover {
-            text-decoration: underline;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255,255,255,0.3);
         }
         h1 {
-            color: #f00;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         .info-box {
-            background-color: #222;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            border-left: 4px solid #f00;
+            background-color: #fff;
+            padding: 20px 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 5px solid #2a5298;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            color: #333;
+        }
+        .info-box h2 {
+            color: #1e3c72;
+            margin-top: 0;
+        }
+        .info-box p {
+            color: #666;
+            margin-bottom: 0;
         }
         .form-group {
             margin-bottom: 15px;
@@ -92,69 +110,94 @@ $result = $mysqli->query($query);
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
+            color: #1e3c72;
         }
         textarea {
             width: 100%;
-            padding: 8px;
+            padding: 12px;
             box-sizing: border-box;
-            background-color: #333;
-            color: #fff;
-            border: 1px solid #555;
-            border-radius: 3px;
+            background-color: #fff;
+            color: #333;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
             min-height: 80px;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
         }
         button {
-            padding: 10px 20px;
-            background-color: #f00;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
             color: #fff;
             border: none;
-            border-radius: 3px;
+            border-radius: 6px;
             cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(42, 82, 152, 0.3);
         }
         button:hover {
-            background-color: #c00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(42, 82, 152, 0.4);
         }
         .message {
-            background-color: #1a3a1a;
-            color: #6b6;
-            padding: 10px;
-            border-radius: 3px;
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 6px;
             margin-bottom: 15px;
+            border: 1px solid #c3e6cb;
         }
         .comments {
-            background-color: #222;
-            padding: 15px;
-            border-radius: 5px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
             margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        .comments h3 {
+            color: #1e3c72;
+            margin-top: 0;
         }
         .comment {
-            background-color: #333;
+            background-color: #f8f9fa;
             padding: 15px;
-            border-radius: 3px;
+            border-radius: 6px;
             margin-bottom: 10px;
-            border-left: 4px solid #555;
+            border-left: 4px solid #2a5298;
         }
         .comment-meta {
-            color: #aaa;
+            color: #6c757d;
             font-size: 12px;
             margin-bottom: 10px;
         }
         .comment-author {
             font-weight: bold;
-            color: #f00;
+            color: #1e3c72;
         }
         .comment-content {
-            color: #fff;
+            color: #333;
             word-wrap: break-word;
         }
         .hint {
-            background-color: #1a3a1a;
-            color: #6b6;
-            padding: 10px;
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-size: 13px;
+            border: 1px solid #c3e6cb;
+        }
+        .hint code {
+            background-color: #fff;
+            padding: 2px 6px;
             border-radius: 3px;
-            margin-top: 10px;
-            font-size: 12px;
+            color: #d63384;
+            font-family: 'Courier New', monospace;
         }
     </style>
 </head>

@@ -53,34 +53,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Sistem Arsip Surat - Pencarian Surat</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #1a1a1a;
-            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             margin: 0;
             padding: 20px;
+            min-height: 100vh;
         }
         .container {
             max-width: 900px;
             margin: 0 auto;
         }
         .back-link {
-            color: #f00;
+            background-color: #fff;
+            color: #1e3c72;
             text-decoration: none;
             margin-bottom: 20px;
             display: inline-block;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(255,255,255,0.2);
         }
         .back-link:hover {
-            text-decoration: underline;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255,255,255,0.3);
         }
         h1 {
-            color: #f00;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         .info-box {
-            background-color: #222;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            border-left: 4px solid #f00;
+            background-color: #fff;
+            padding: 20px 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 5px solid #2a5298;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            color: #333;
+        }
+        .info-box h2 {
+            color: #1e3c72;
+            margin-top: 0;
+        }
+        .info-box p {
+            color: #666;
+            margin-bottom: 0;
         }
         .form-group {
             margin-bottom: 15px;
@@ -89,40 +107,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
+            color: #1e3c72;
         }
         input[type="text"],
         textarea {
             width: 100%;
-            padding: 8px;
+            padding: 12px;
             box-sizing: border-box;
-            background-color: #333;
-            color: #fff;
-            border: 1px solid #555;
-            border-radius: 3px;
+            background-color: #fff;
+            color: #333;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
         }
         button {
-            padding: 10px 20px;
-            background-color: #f00;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
             color: #fff;
             border: none;
-            border-radius: 3px;
+            border-radius: 6px;
             cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(42, 82, 152, 0.3);
         }
         button:hover {
-            background-color: #c00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(42, 82, 152, 0.4);
         }
         .error {
-            color: #ff6b6b;
-            background-color: #5c2121;
-            padding: 10px;
-            border-radius: 3px;
+            color: #721c24;
+            background-color: #f8d7da;
+            padding: 15px;
+            border-radius: 6px;
             margin-bottom: 15px;
+            border: 1px solid #f5c6cb;
         }
         .results {
-            background-color: #222;
-            padding: 15px;
-            border-radius: 5px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
             margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        .results h3 {
+            color: #1e3c72;
+            margin-top: 0;
         }
         .results table {
             width: 100%;
@@ -130,22 +166,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         .results th,
         .results td {
-            padding: 10px;
+            padding: 12px;
             text-align: left;
-            border-bottom: 1px solid #555;
+            border-bottom: 1px solid #e0e0e0;
         }
         .results th {
-            background-color: #333;
+            background-color: #f5f5f5;
             font-weight: bold;
-            color: #f00;
+            color: #1e3c72;
+        }
+        .results td {
+            color: #333;
         }
         .hint {
-            background-color: #1a3a1a;
-            color: #6b6;
-            padding: 10px;
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-size: 13px;
+            border: 1px solid #c3e6cb;
+        }
+        .hint code {
+            background-color: #fff;
+            padding: 2px 6px;
             border-radius: 3px;
-            margin-top: 10px;
-            font-size: 12px;
+            color: #d63384;
+            font-family: 'Courier New', monospace;
         }
     </style>
 </head>
