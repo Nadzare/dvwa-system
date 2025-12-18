@@ -147,9 +147,15 @@ if (!isset($_SESSION['user_id'])) {
             <a href="logout.php" class="logout-btn">🚪 Logout</a>
         </div>
         <div class="welcome">
-            <p>👋 Selamat datang, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>! | Role: <strong>Financial Administrator</strong></p>
+            <p>👋 Selamat datang, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>! | Role: <strong>Financial Administrator</strong> | Security Level: <strong style="color: #ff9800;"><?php echo strtoupper($_SESSION['security_level'] ?? 'LOW'); ?></strong></p>
         </div>
         <div class="labs">
+            <div class="lab-card" style="border-left: 5px solid #9c27b0;">
+                <div class="lab-card-icon">🛡️</div>
+                <h2>Security Level</h2>
+                <p>Atur tingkat keamanan sistem (Low, Medium, High, Impossible). Setiap level memiliki proteksi berbeda pada vulnerability.</p>
+                <a href="security_level.php" style="background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);">⚙️ Atur Level</a>
+            </div>
             <div class="lab-card">
                 <div class="lab-card-icon">🔍</div>
                 <h2>Pencarian Transaksi</h2>

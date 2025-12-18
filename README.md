@@ -1,4 +1,4 @@
-# 💰 Financial System DVWA - Vulnerable Financial Management System
+# Financial System DVWA - Vulnerable Financial Management System
 
 [![GitHub](https://img.shields.io/badge/GitHub-Nadzare%2Fdvwa--system-blue?logo=github)](https://github.com/Nadzare/dvwa-system)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker)](https://www.docker.com/)

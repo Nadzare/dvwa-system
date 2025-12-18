@@ -6,6 +6,12 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Set default security level
+if (!isset($_SESSION['security_level'])) {
+    $_SESSION['security_level'] = 'low';
+}
+
+$security_level = $_SESSION['security_level'];
 $error = '';
 $result = null;
 $search_query = '';
@@ -32,18 +38,68 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // EVASION SUPPORT: Normalize whitespace
     $decoded_query = preg_replace('/[\t\n\r\x00\x0B]+/', ' ', $decoded_query);
     
-    // VULNERABLE: SQL Injection - No parameterized queries, NO ESCAPING
-    // Attacker can use: 1' OR '1'='1
-    // Attacker can use: 1' UNION SELECT 1,2,3,4 -- 
-    // Attacker can use: 1' UNION SELECT username, password, 3, created_at FROM users -- 
-    // The query is directly concatenated without any sanitization
-    $query = "SELECT id, username, email, created_at FROM comments WHERE id = '" . $decoded_query . "'";
-    
-    $result = $mysqli->query($query);
-    
-    if (!$result) {
-        // Error-based SQLi - returns MySQL errors
-        $error = "Kesalahan SQL: " . $mysqli->error;
+    // ========== SECURITY LEVEL IMPLEMENTATION ==========
+    switch($security_level) {
+        case 'low':
+            // 🟢 LOW: Vulnerable - No protection at all
+            // Direct concatenation, no escaping, error messages exposed
+            $query = "SELECT id, username, email, created_at FROM comments WHERE id = '" . $decoded_query . "'";
+            $result = $mysqli->query($query);
+            
+            if (!$result) {
+                $error = "Kesalahan SQL: " . $mysqli->error; // Expose error
+            }
+            break;
+            
+        case 'medium':
+            // 🟡 MEDIUM: Basic protection - mysqli_real_escape_string
+            // Still vulnerable to some bypass techniques
+            $escaped_query = mysqli_real_escape_string($mysqli, $decoded_query);
+            $query = "SELECT id, username, email, created_at FROM comments WHERE id = '" . $escaped_query . "'";
+            $result = $mysqli->query($query);
+            
+            if (!$result) {
+                $error = "Pencarian gagal. Silakan coba lagi."; // Generic error
+            }
+            break;
+            
+        case 'high':
+            // 🟠 HIGH: Prepared Statement with PDO
+            // Secure against SQLi but still allows non-numeric input
+            try {
+                $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PASSWORD);
+                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                
+                $stmt = $pdo->prepare("SELECT id, username, email, created_at FROM comments WHERE id = :id");
+                $stmt->bindParam(':id', $decoded_query, PDO::PARAM_STR);
+                $stmt->execute();
+                
+                $result = $stmt;
+            } catch (PDOException $e) {
+                $error = "Pencarian gagal."; // No error details
+            }
+            break;
+            
+        case 'impossible':
+            // 🔴 IMPOSSIBLE: Fully secure - Prepared statement + validation
+            // Only accepts numeric IDs
+            if (!is_numeric($decoded_query)) {
+                $error = "ID harus berupa angka.";
+            } else {
+                try {
+                    $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PASSWORD);
+                    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                    
+                    $stmt = $pdo->prepare("SELECT id, username, email, created_at FROM comments WHERE id = :id");
+                    $stmt->bindParam(':id', $decoded_query, PDO::PARAM_INT);
+                    $stmt->execute();
+                    
+                    $result = $stmt;
+                } catch (PDOException $e) {
+                    $error = "Pencarian gagal.";
+                }
+            }
+            break;
     }
 }
 ?>
@@ -199,34 +255,78 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="container">
         <a href="dashboard_id.php" class="back-link">← Kembali ke Dasbor</a>
-        <h1>Pencarian Surat</h1>
+        <h1>🔍 Pencarian Transaksi Keuangan</h1>
+        
+        <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 12px 15px; border-radius: 5px; margin-bottom: 20px; color: #856404; font-size: 14px; font-weight: 600;">
+            🛡️ Security Level: <strong><?php echo strtoupper($security_level); ?></strong> | 
+            <a href="security_level.php" style="color: #856404; text-decoration: underline;">Ubah Level</a>
+        </div>
+        
         <div class="info-box">
-            <h2>Cari Surat Berdasarkan Nomor</h2>
-            <p>Cari surat masuk/keluar berdasarkan nomor surat. Fitur ini rentan terhadap SQL Injection.</p>
+            <h2>Cari Transaksi Berdasarkan ID</h2>
+            <p>Cari transaksi keuangan berdasarkan ID transaksi atau nomor invoice. Fitur ini rentan terhadap SQL Injection pada level <strong>LOW</strong>.</p>
         </div>
         <form method="POST">
             <div class="form-group">
-                <label for="search">Nomor Surat</label>
-                <input type="text" id="search" name="search" placeholder="Masukkan nomor surat atau payload SQL injection...">
+                <label for="search">ID Transaksi / Invoice Number</label>
+                <input type="text" id="search" name="search" placeholder="Masukkan ID transaksi atau payload SQL injection..." value="<?php echo htmlspecialchars($search_query); ?>">
             </div>
-            <button type="submit">Cari</button>
+            <button type="submit">🔎 Cari Transaksi</button>
         </form>
+        
+        <?php if ($security_level === 'low'): ?>
         <div class="hint">
-            <strong>Petunjuk Eksploitasi:</strong><br>
-            • Coba: <code>1' OR '1'='1' #</code> - tampilkan semua surat<br>
+            <strong>💡 Petunjuk Eksploitasi (Level LOW):</strong><br>
+            • Coba: <code>1' OR '1'='1' #</code> - tampilkan semua transaksi<br>
             • Coba: <code>1' UNION SELECT 1,2,3,4 #</code> - uji kolom UNION<br>
-            • Coba: <code>1' UNION SELECT username,password,3,created_at FROM users #</code> - ekstrak data user<br>
-            • Coba: <code>1' AND SLEEP(5) #</code> - SQLi blind berbasis waktu (response delay 5 detik)<br>
+            • Coba: <code>1' UNION SELECT username,password,3,created_at FROM users #</code> - ekstrak kredensial staff<br>
+            • Coba: <code>1' AND SLEEP(5) #</code> - SQLi blind berbasis waktu<br>
             • Alternative: Gunakan <code>--+</code> atau <code>#</code> untuk SQL comment
         </div>
+        <?php elseif ($security_level === 'medium'): ?>
+        <div class="hint">
+            <strong>💡 Petunjuk (Level MEDIUM):</strong><br>
+            Level ini menggunakan <code>mysqli_real_escape_string()</code> yang mem-filter karakter khusus.<br>
+            Proteksi: Single quotes di-escape, tapi masih vulnerable dalam beberapa konteks tertentu.
+        </div>
+        <?php elseif ($security_level === 'high'): ?>
+        <div class="hint">
+            <strong>💡 Petunjuk (Level HIGH):</strong><br>
+            Level ini menggunakan <strong>Prepared Statements (PDO)</strong> yang secure terhadap SQLi.<br>
+            Parameterized queries mencegah SQL injection attacks.
+        </div>
+        <?php else: ?>
+        <div class="hint">
+            <strong>💡 Petunjuk (Level IMPOSSIBLE):</strong><br>
+            Level ini menggunakan <strong>Prepared Statements + Input Validation</strong>.<br>
+            Hanya menerima input numerik. Fully secure implementation.
+        </div>
+        <?php endif; ?>
         
         <?php if ($error): ?>
             <div class="error"><?php echo htmlspecialchars($error); ?></div>
         <?php endif; ?>
         
-        <?php if ($result && $result->num_rows > 0): ?>
+        <?php 
+        // Handle different result types (mysqli_result for low/medium, PDOStatement for high/impossible)
+        $has_results = false;
+        $rows = [];
+        
+        if ($result) {
+            if ($result instanceof mysqli_result) {
+                $has_results = $result->num_rows > 0;
+                while ($row = $result->fetch_assoc()) {
+                    $rows[] = $row;
+                }
+            } elseif ($result instanceof PDOStatement) {
+                $rows = $result->fetchAll(PDO::FETCH_ASSOC);
+                $has_results = count($rows) > 0;
+            }
+        }
+        
+        if ($has_results): ?>
             <div class="results">
-                <h3>Hasil Pencarian Surat</h3>
+                <h3>✅ Hasil Pencarian Transaksi</h3>
                 <table>
                     <thead>
                         <tr>
@@ -237,19 +337,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php while ($row = $result->fetch_assoc()): ?>
+                        <?php foreach ($rows as $row): ?>
                             <tr>
                                 <td><?php echo htmlspecialchars((string)$row['id']); ?></td>
                                 <td><?php echo htmlspecialchars((string)$row['username']); ?></td>
                                 <td><?php echo htmlspecialchars((string)($row['email'] ?? 'N/A')); ?></td>
                                 <td><?php echo htmlspecialchars((string)$row['created_at']); ?></td>
                             </tr>
-                        <?php endwhile; ?>
+                        <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>
         <?php elseif (!$error && $search_query): ?>
-            <div class="error">Tidak ada surat dengan nomor: <?php echo htmlspecialchars($search_query); ?></div>
+            <div class="error">❌ Tidak ada transaksi dengan ID: <?php echo htmlspecialchars($search_query); ?></div>
         <?php endif; ?>
     </div>
 </body>
